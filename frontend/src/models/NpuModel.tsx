@@ -3,5 +3,12 @@ export interface Npu {
   id: string;
   description: string;
   imageUrl: string;
-  score: number;
+  creativity: {
+    score: number;
+    votes: number;
+  };
+  uniqueness: {
+    score: number;
+    votes: number;
+  };
 }

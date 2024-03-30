@@ -1,7 +1,10 @@
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import npuData from "../MOCK_DATA.json";
+import npuData from "@/MOCK_DATA.json";
 import Link from "next/link";
-import { StarIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronRightIcon,
+  LightBulbIcon,
+  FingerPrintIcon,
+} from "@heroicons/react/20/solid";
 
 export default function Home() {
   return (
@@ -24,12 +27,16 @@ export default function Home() {
           </div>
           <div className="px-6 pt-2 pb-4 flex justify-between items-center">
             <div className="flex items-center">
-              <StarIcon className="h-7 w-7 text-yellow-500 mr-2" />
+              <LightBulbIcon className="h-7 w-7 text-yellow-500 mr-2" />
+              <span className="text-sm font-semibold text-gray-700 mr-4">
+                {npu.creativity.score}
+              </span>
+              <FingerPrintIcon className="h-7 w-7 text-yellow-500 mr-2" />
               <span className="text-sm font-semibold text-gray-700">
-                Score: {npu.score}
+                {npu.uniqueness.score}
               </span>
             </div>
-            <Link href={`/details/${npu.id}`} passHref>
+            <Link href={`/npuDetail/${npu.id}`} passHref>
               <button className="flex items-center text-white bg-blue-500 px-3 py-2 rounded">
                 <span>Details</span>
                 <ChevronRightIcon className="h-5 w-5 ml-2" />
