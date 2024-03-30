@@ -1,12 +1,30 @@
-import npuData from "@/MOCK_DATA.json";
+"use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ChevronRightIcon,
   LightBulbIcon,
   FingerPrintIcon,
 } from "@heroicons/react/20/solid";
+import { Npu } from "@/models/NpuModel";
 
 export default function Home() {
+  const [npuData, setNpuData] = useState<Npu[]>([]);
+
+  useEffect(() => {
+    const fetchNpus = async () => {
+      const response = await fetch("http://localhost:5105/api/npu");
+      if (!response.ok) {
+        console.error("Failed to fetch npus");
+        return;
+      }
+
+      const npus = await response.json();
+      setNpuData(npus);
+    };
+
+    fetchNpus();
+  }, []);
   return (
     <main className="flex flex-wrap justify-around p-4">
       {npuData.map((npu) => (
@@ -29,11 +47,11 @@ export default function Home() {
             <div className="flex items-center">
               <LightBulbIcon className="h-7 w-7 text-yellow-500 mr-2" />
               <span className="text-sm font-semibold text-gray-700 mr-4">
-                {npu.creativity.score}
+                {npu.creativity.score.toFixed(1)}
               </span>
               <FingerPrintIcon className="h-7 w-7 text-yellow-500 mr-2" />
               <span className="text-sm font-semibold text-gray-700">
-                {npu.uniqueness.score}
+                {npu.uniqueness.score.toFixed(1)}
               </span>
             </div>
             <Link href={`/npuDetail/${npu.id}`} passHref>
