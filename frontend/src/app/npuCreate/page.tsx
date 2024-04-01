@@ -41,8 +41,8 @@ function NpuCreate() {
           name: name,
           description: description,
           imageUrl: imageUrl,
-          creativity: { scoreValue: 0, votes: 0 },
-          uniqueness: { scoreValue: 0, votes: 0 },
+          creativity: { score: 0, votes: 0 },
+          uniqueness: { score: 0, votes: 0 },
         }),
       });
 

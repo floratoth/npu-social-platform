@@ -47,11 +47,11 @@ export default function Home() {
             <div className="flex items-center">
               <LightBulbIcon className="h-7 w-7 text-yellow-500 mr-2" />
               <span className="text-sm font-semibold text-gray-700 mr-4">
-                {npu.creativity.score.toFixed(1)}
+                {npu.creativity.score ? npu.creativity.score.toFixed(1) : 0}
               </span>
               <FingerPrintIcon className="h-7 w-7 text-yellow-500 mr-2" />
               <span className="text-sm font-semibold text-gray-700">
-                {npu.uniqueness.score.toFixed(1)}
+                {npu.uniqueness.score ? npu.uniqueness.score.toFixed(1) : 0}
               </span>
             </div>
             <Link href={`/npuDetail/${npu.id}`} passHref>

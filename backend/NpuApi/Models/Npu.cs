@@ -1,31 +1,15 @@
-using System.Text.Json.Serialization;
-
-public class Score
+public class ScoreDto
 {
-    [JsonPropertyName("score")]
-    public double ScoreValue { get; set; }
-
-    [JsonPropertyName("votes")]
+    public double Score { get; set; }
     public int Votes { get; set; }
 }
 
-public class Npu
+public class NpuDto
 {
-    [JsonPropertyName("id")]
     public string? Id { get; set; }
-
-    [JsonPropertyName("name")]
-    public string? Name { get; set; }
-
-    [JsonPropertyName("imageUrl")]
-    public string? ImageUrl { get; set; }
-
-    [JsonPropertyName("description")]
-    public string? Description { get; set; }
-
-    [JsonPropertyName("creativity")]
-    public Score? Creativity { get; set; }
-
-    [JsonPropertyName("uniqueness")]
-    public Score? Uniqueness { get; set; }
+    public ScoreDto? Creativity { get; set; }
+    public ScoreDto? Uniqueness { get; set; }
+    public string Description { get; set; }
+    public string Name { get; set; }
+    public string ImageUrl { get; set; }
 }

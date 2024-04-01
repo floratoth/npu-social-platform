@@ -108,14 +108,14 @@ export default function NpuDetail({ npuData }: NpuDetailProps) {
               <LightBulbIcon className="h-7 w-7 text-yellow-500 mr-2" />
               <strong className="font-bold">Creativity:</strong>{" "}
               <span className="text-sm font-semibold text-gray-700 ml-2">
-                {npu.creativity.score.toFixed(1)}
+                {npu.creativity.score ? npu.creativity.score.toFixed(2) : 0}
               </span>
             </div>
             <div className="flex items-center">
               <FingerPrintIcon className="h-7 w-7 text-yellow-500 mr-2" />
               <strong className="font-bold">Uniqueness:</strong>{" "}
               <span className="text-sm font-semibold text-gray-700 ml-2">
-                {npu.uniqueness.score.toFixed(1)}
+                {npu.uniqueness.score ? npu.uniqueness.score.toFixed(2) : 0}
               </span>
             </div>
           </div>
