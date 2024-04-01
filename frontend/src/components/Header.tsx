@@ -9,12 +9,12 @@ function Header() {
         </span>
       </Link>
       <nav className="space-x-2 md:space-x-4">
-        <Link href="/npu-list">
+        <Link href="/">
           <span className="cursor-pointer text-sm md:text-lg font-semibold hover:text-red-600">
             NPU List
           </span>
         </Link>
-        <Link href="/create-npu">
+        <Link href="/npuCreate">
           <span className="cursor-pointer text-sm md:text-lg font-semibold hover:text-red-600">
             Create NPU
           </span>

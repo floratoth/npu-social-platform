@@ -30,7 +30,7 @@ export default function Home() {
       {npuData.map((npu) => (
         <div
           key={npu.id}
-          className="max-w-sm rounded overflow-hidden shadow-lg m-4 flex flex-col bg-white"
+          className="w-92 rounded overflow-hidden shadow-lg m-4 flex flex-col bg-white"
         >
           <img
             className="w-full h-64 object-cover"
@@ -39,9 +39,9 @@ export default function Home() {
           />
           <div className="px-6 py-4 flex-grow">
             <div className="font-bold text-xl mb-2">{npu.name}</div>
-            <p className="text-gray-700 text-base">
+            <div className="text-gray-700 text-base h-20 overflow-auto">
               {npu.description.substring(0, 100)}...
-            </p>
+            </div>
           </div>
           <div className="px-6 pt-2 pb-4 flex justify-between items-center">
             <div className="flex items-center">

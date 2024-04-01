@@ -71,5 +71,25 @@ public ActionResult<Npu> UpdateNpu(string id, [FromBody] Npu updatedNpu)
 
     return npu;  // Return the updated npu
 }
+
+[HttpPost]
+public ActionResult<Npu> CreateNpu([FromBody] Npu newNpu)
+{
+    // Generate an ID for the new Npu
+    newNpu.Id = Guid.NewGuid().ToString();
+
+    // Initialize the scores
+    newNpu.Creativity = new Score { ScoreValue = 0, Votes = 0 };
+    newNpu.Uniqueness = new Score { ScoreValue = 0, Votes = 0 };
+
+    // Add the new Npu to the list
+    npus.Add(newNpu);
+
+    // Save the updated list of npus back to the JSON file
+    string json = JsonSerializer.Serialize(npus);
+    System.IO.File.WriteAllText("MOCK_DATA.json", json);
+
+    return newNpu;  // Return the created npu
+}
 }
 
