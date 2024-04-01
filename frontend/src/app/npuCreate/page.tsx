@@ -1,10 +1,13 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useState, ChangeEvent, FormEvent } from "react";
+import { toast } from "react-toastify";
 
 function NpuCreate() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -47,7 +50,12 @@ function NpuCreate() {
         throw new Error(`HTTP error! status: ${response.status}`);
       } else {
         const data = await response.json();
-        console.log("Success:", data);
+        router.push("/");
+        setTimeout(
+          () =>
+            toast.success("Thank you! Your new NPU was successfully saved."),
+          1000
+        );
       }
     } catch (error) {
       console.error("Error:", error);

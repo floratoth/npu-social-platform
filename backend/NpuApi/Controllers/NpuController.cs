@@ -12,7 +12,6 @@ public class NpuController : ControllerBase
 
     public NpuController()
     {
-        Console.WriteLine("cica");
         using (StreamReader r = new StreamReader("MOCK_DATA.json"))
         {
             string json = r.ReadToEnd();
@@ -24,8 +23,7 @@ public class NpuController : ControllerBase
     [HttpGet]
     public ActionResult<List<Npu>> GetAllNpus()
     {
-         var json = JsonSerializer.Serialize(npus);
-    Console.WriteLine("npu-s: " + json);
+        var json = JsonSerializer.Serialize(npus);
         return npus;
     }
 
