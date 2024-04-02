@@ -1,11 +1,7 @@
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.DynamoDBv2.Model;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 
 [Route("api/npu")]
 [ApiController]
@@ -149,12 +145,12 @@ public async Task<ActionResult<NpuDto>> GetNpuById(string id)
         Id = npuDocument["Id"].AsString(),
         Creativity = new ScoreDto
         {
-            Score = npuDocument["Creativity"].AsDocument()["Score"].AsInt(),
+            Score = npuDocument["Creativity"].AsDocument()["Score"].AsDouble(),
             Votes = npuDocument["Creativity"].AsDocument()["Votes"].AsInt()
         },
         Uniqueness = new ScoreDto
         {
-            Score = npuDocument["Uniqueness"].AsDocument()["Score"].AsInt(),
+            Score = npuDocument["Uniqueness"].AsDocument()["Score"].AsDouble(),
             Votes = npuDocument["Uniqueness"].AsDocument()["Votes"].AsInt()
         },
         Description = npuDocument["Description"].AsString(),
@@ -194,13 +190,13 @@ public async Task<ActionResult<NpuDto>> UpdateNpu(string id, [FromBody] NpuDto u
 
     npuDocument["Creativity"] = new Document
 {
-    ["Score"] = Math.Round((npuDocument["Creativity"].AsDocument()["Score"].AsDouble() * oldCreativityVotes + updatedNpu.Creativity.Score) / (oldCreativityVotes + 1), 2),
+    ["Score"] = Math.Round((npuDocument["Creativity"].AsDocument()["Score"].AsDouble() * oldCreativityVotes + updatedNpu.Creativity.Score) / (oldCreativityVotes + 1), 5),
     ["Votes"] = oldCreativityVotes + 1
 };
 
 npuDocument["Uniqueness"] = new Document
 {
-    ["Score"] = Math.Round((npuDocument["Uniqueness"].AsDocument()["Score"].AsDouble() * oldUniquenessVotes + updatedNpu.Uniqueness.Score) / (oldUniquenessVotes + 1), 2),
+    ["Score"] = Math.Round((npuDocument["Uniqueness"].AsDocument()["Score"].AsDouble() * oldUniquenessVotes + updatedNpu.Uniqueness.Score) / (oldUniquenessVotes + 1), 5),
     ["Votes"] = oldUniquenessVotes + 1
 };
 
@@ -231,174 +227,5 @@ Uniqueness = new ScoreDto
 
     // Return the updated NpuDto
     return npuDto;
-}
-
-
-
-// // This method handles PUT requests to /api/npu/{id} and updates an existing Npu
-// [HttpPut("{id}")]
-// public async Task<ActionResult<NpuDto>> UpdateNpu(string id, [FromBody] NpuDto updatedNpu)
-// {
-//     // Load the DynamoDB table
-//     Table npuTable = Table.LoadTable(client, tableName);
-
-//     // Get the item from DynamoDB
-//     Document npuDocument = await npuTable.GetItemAsync(id);
-
-//     if (npuDocument == null)
-//     {
-//         return NotFound();
-//     }
-
-//     // Calculate the new Creativity score
-//     double oldCreativityScore = npuDocument["Creativity"].AsDocument()["Score"].AsDouble();
-//     int oldCreativityVotes = npuDocument["Creativity"].AsDocument()["Votes"].AsInt();
-//     double newCreativityScore = (oldCreativityScore * oldCreativityVotes + updatedNpu.Creativity.Score) / (oldCreativityVotes + 1);
-
-//     // Calculate the new Uniqueness score
-//     double oldUniquenessScore = npuDocument["Uniqueness"].AsDocument()["Score"].AsDouble();
-//     int oldUniquenessVotes = npuDocument["Uniqueness"].AsDocument()["Votes"].AsInt();
-//     double newUniquenessScore = (oldUniquenessScore * oldUniquenessVotes + updatedNpu.Uniqueness.Score) / (oldUniquenessVotes + 1);
-
-// // Define the update expression
-// string updateExpression = "SET Creativity.Score = :c, Creativity.Votes = Creativity.Votes + :cv, Uniqueness.Score = :u, Uniqueness.Votes = Uniqueness.Votes + :uv";
-
-
-// // Define the attribute values
-// var attributeValues = new Dictionary<string, AttributeValue>
-// {
-//     {":c", new AttributeValue { N = newCreativityScore.ToString() }},
-//     {":cv", new AttributeValue { N = "1" }},
-//     {":u", new AttributeValue { N = newUniquenessScore.ToString() }},
-//     {":uv", new AttributeValue { N = "1" }}
-// };
-
-//     // Update the item in DynamoDB
-//     var updateItem = new UpdateItemRequest
-//     {
-//         TableName = tableName,
-//         Key = new Dictionary<string, AttributeValue>() { { "Id", new AttributeValue { S = id } } },
-//         ExpressionAttributeValues = attributeValues,
-//         UpdateExpression = updateExpression,
-//         ReturnValues = ReturnValue.UPDATED_NEW
-//     };
-
-//     UpdateItemResponse updatedResponse = await client.UpdateItemAsync(updateItem);
-
-//     if (updatedResponse.HttpStatusCode == HttpStatusCode.OK)
-// {
-//     var updatedAttributes = updatedResponse.Attributes;
-
-//     var npuDto = new NpuDto
-//     {
-//         Id = npuDocument["Id"].AsString(),
-//         Creativity = new ScoreDto
-//         {
-//             Score = double.Parse(updatedAttributes["Creativity"].M["Score"].N),
-//             Votes = int.Parse(updatedAttributes["Creativity"].M["Votes"].N)
-//         },
-//         Uniqueness = new ScoreDto
-//         {
-//             Score = double.Parse(updatedAttributes["Uniqueness"].M["Score"].N),
-//             Votes = int.Parse(updatedAttributes["Uniqueness"].M["Votes"].N)
-//         },
-//         Description = npuDocument["Description"].AsString(),
-//         Name = npuDocument["Name"].AsString(),
-//         ImageUrl = npuDocument["ImageUrl"].AsString()
-//     };
-
-//     return npuDto;
-// }
-// else
-// {
-//     return Problem("An error occurred while updating the NPU.");
-// }
-
-// }
-
-}
-// public class NpuController : ControllerBase
-// {
-//     private List<Npu> npus;
-
-//     public NpuController()
-//     {
-//         using (StreamReader r = new StreamReader("MOCK_DATA.json"))
-//         {
-//             string json = r.ReadToEnd();
-//             npus = JsonSerializer.Deserialize<List<Npu>>(json);
-//         }
-//     }
-
-//     // GET api/npu
-//     [HttpGet]
-//     public ActionResult<List<Npu>> GetAllNpus()
-//     {
-//         var json = JsonSerializer.Serialize(npus);
-//         return npus;
-//     }
-
-// // GET api/npu/{id}
-// [HttpGet("{id}")]
-// public ActionResult<Npu> GetNpuById(string id)
-// {
-//     var npu = npus.FirstOrDefault(n => n.Id == id);
-//     if (npu == null)
-//     {
-//         return NotFound();
-//     }
-
-//     return npu;
-// }
-
-// [HttpPut("{id}")]
-// public ActionResult<Npu> UpdateNpu(string id, [FromBody] Npu updatedNpu)
-// {
-//     var npu = npus.FirstOrDefault(n => n.Id == id);
-//     if (npu == null)
-//     {
-//         return NotFound();
-//     }
-
-//     npu.Creativity.Score = npu.Creativity.Score * npu.Creativity.Votes + updatedNpu.Creativity.Score;
-//     npu.Creativity.Votes++;
-//     npu.Creativity.Score /= npu.Creativity.Votes;
-    
-//     npu.Uniqueness.Score = npu.Uniqueness.Score * npu.Uniqueness.Votes + updatedNpu.Uniqueness.Score;
-//     npu.Uniqueness.Votes++;
-//     npu.Uniqueness.Score /= npu.Uniqueness.Votes;
-
-//     var npuIndex = npus.FindIndex(n => n.Id == id);
-//     if (npuIndex != -1)
-//     {
-//         npus[npuIndex] = npu;
-//     }
-
-//     // Save the updated list of npus back to the JSON file
-//     string json = JsonSerializer.Serialize(npus);
-//     System.IO.File.WriteAllText("MOCK_DATA.json", json);
-
-//     return npu;  // Return the updated npu
-// }
-
-// [HttpPost]
-// public ActionResult<Npu> CreateNpu([FromBody] Npu newNpu)
-// {
-//     // Generate an ID for the new Npu
-//     newNpu.Id = Guid.NewGuid().ToString();
-
-//     // Initialize the scores
-//     newNpu.Creativity = new Score { Score = 0, Votes = 0 };
-//     newNpu.Uniqueness = new Score { Score = 0, Votes = 0 };
-
-//     // Add the new Npu to the list
-//     npus.Add(newNpu);
-
-//     // Save the updated list of npus back to the JSON file
-//     string json = JsonSerializer.Serialize(npus);
-//     System.IO.File.WriteAllText("MOCK_DATA.json", json);
-
-//     return newNpu;  // Return the created npu
-// }
-// }
+}}
 

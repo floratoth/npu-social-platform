@@ -5,6 +5,7 @@ import npuData from "@/MOCK_DATA.json";
 import { Npu } from "@/models/NpuModel";
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { LightBulbIcon, FingerPrintIcon } from "@heroicons/react/20/solid";
+import { toast } from "react-toastify";
 
 interface NpuDetailProps {
   npuData: Npu;
@@ -30,6 +31,14 @@ export default function NpuDetail({ npuData }: NpuDetailProps) {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (npu)
+      if (localStorage.getItem(npu.id)) {
+        // if the user has already voted for this item, disable the voting button
+        setHasVoted(true);
+      }
+  }, [npu]);
+
   const updateScores = () => {
     if (!npu) {
       return;
@@ -47,30 +56,31 @@ export default function NpuDetail({ npuData }: NpuDetailProps) {
       },
     };
 
-    fetch(`http://localhost:5105/api/npu/${npu.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedNpu),
-    })
-      .then((response) => response.json())
-      .then((updatedNpu) => {
-        console.log("UPDATED NPU: ", updatedNpu);
-        setHasVoted(true);
-
-        // Hide the message after 5 seconds
-        setTimeout(() => {
-          setHasVoted(false);
-        }, 5000); // 5000ms = 5 seconds
-        setNpu(updatedNpu);
-        setCreativityScore(0);
-        setUniquenessScore(0);
+    if (localStorage.getItem(npu.id)) {
+      setHasVoted(true);
+    } else {
+      fetch(`http://localhost:5105/api/npu/${npu.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedNpu),
       })
-      .catch((err) => {
-        console.error(err);
-        setHasVoted(false);
-      });
+        .then((response) => response.json())
+        .then((updatedNpu) => {
+          localStorage.setItem(npu.id, "voted");
+          toast.success(
+            "Thank You for Voting! Your votes for Creativity and Uniqueness have been recorded. We appreciate your contribution!"
+          );
+          setNpu(updatedNpu);
+          setCreativityScore(0);
+          setUniquenessScore(0);
+        })
+        .catch((err) => {
+          console.error(err);
+          setHasVoted(false);
+        });
+    }
   };
 
   if (!npu) {
@@ -163,22 +173,15 @@ export default function NpuDetail({ npuData }: NpuDetailProps) {
               <button
                 onClick={updateScores}
                 disabled={hasVoted}
-                className="self-start md:self-auto px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-green-500 hover:bg-green-600 mt-4 md:mt-0 ml-auto"
+                className={`self-start md:self-auto px-6 py-3 border border-transparent text-sm font-medium rounded-md text-white ${
+                  hasVoted
+                    ? "bg-gray-500 cursor-not-allowed"
+                    : "bg-green-500 hover:bg-green-600"
+                } mt-4 md:mt-0 ml-auto`}
               >
-                I vote!
+                {hasVoted ? "Already Voted" : "I vote!"}
               </button>
             </div>
-            {hasVoted && (
-              <div className="mt-4 p-4 border border-gray-200 rounded shadow-sm bg-green-50 text-green-700">
-                <h2 className="text-2xl font-bold mb-4 text-center">
-                  Thank You for Voting!
-                </h2>
-                <p className="text-center">
-                  Your votes for Creativity and Uniqueness have been recorded.
-                  We appreciate your contribution!
-                </p>
-              </div>
-            )}
           </div>
         </div>
       </div>

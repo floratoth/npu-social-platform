@@ -7,9 +7,11 @@ import {
   FingerPrintIcon,
 } from "@heroicons/react/20/solid";
 import { Npu } from "@/models/NpuModel";
+import SearchBar from "@/components/SearchBar";
 
 export default function Home() {
   const [npuData, setNpuData] = useState<Npu[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchNpus = async () => {
@@ -26,43 +28,52 @@ export default function Home() {
     fetchNpus();
   }, []);
   return (
-    <main className="flex flex-wrap justify-around p-4">
-      {npuData.map((npu) => (
-        <div
-          key={npu.id}
-          className="w-92 rounded overflow-hidden shadow-lg m-4 flex flex-col bg-white"
-        >
-          <img
-            className="w-full h-64 object-cover"
-            src={npu.imageUrl}
-            alt={npu.name}
-          />
-          <div className="px-6 py-4 flex-grow">
-            <div className="font-bold text-xl mb-2">{npu.name}</div>
-            <div className="text-gray-700 text-base h-20 overflow-auto">
-              {npu.description.substring(0, 100)}...
+    <main className="p-4">
+      <div className="mb-4 max-w-xl mx-auto">
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      </div>
+      <div className="flex flex-wrap justify-around">
+        {npuData
+          .filter((npu) =>
+            npu.name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+          .map((npu) => (
+            <div
+              key={npu.id}
+              className="w-92 rounded overflow-hidden shadow-lg m-4 flex flex-col bg-white"
+            >
+              <img
+                className="w-full h-64 object-cover"
+                src={npu.imageUrl}
+                alt={npu.name}
+              />
+              <div className="px-6 py-4 flex-grow">
+                <div className="font-bold text-xl mb-2">{npu.name}</div>
+                <div className="text-gray-700 text-base h-20 overflow-auto">
+                  {npu.description.substring(0, 100)}...
+                </div>
+              </div>
+              <div className="px-6 pt-2 pb-4 flex justify-between items-center">
+                <div className="flex items-center">
+                  <LightBulbIcon className="h-7 w-7 text-yellow-500 mr-2" />
+                  <span className="text-sm font-semibold text-gray-700 mr-4">
+                    {npu.creativity.score ? npu.creativity.score.toFixed(1) : 0}
+                  </span>
+                  <FingerPrintIcon className="h-7 w-7 text-yellow-500 mr-2" />
+                  <span className="text-sm font-semibold text-gray-700">
+                    {npu.uniqueness.score ? npu.uniqueness.score.toFixed(1) : 0}
+                  </span>
+                </div>
+                <Link href={`/npuDetail/${npu.id}`} passHref>
+                  <button className="flex items-center text-white bg-blue-500 px-3 py-2 rounded">
+                    <span>Details</span>
+                    <ChevronRightIcon className="h-5 w-5 ml-2" />
+                  </button>
+                </Link>
+              </div>
             </div>
-          </div>
-          <div className="px-6 pt-2 pb-4 flex justify-between items-center">
-            <div className="flex items-center">
-              <LightBulbIcon className="h-7 w-7 text-yellow-500 mr-2" />
-              <span className="text-sm font-semibold text-gray-700 mr-4">
-                {npu.creativity.score ? npu.creativity.score.toFixed(1) : 0}
-              </span>
-              <FingerPrintIcon className="h-7 w-7 text-yellow-500 mr-2" />
-              <span className="text-sm font-semibold text-gray-700">
-                {npu.uniqueness.score ? npu.uniqueness.score.toFixed(1) : 0}
-              </span>
-            </div>
-            <Link href={`/npuDetail/${npu.id}`} passHref>
-              <button className="flex items-center text-white bg-blue-500 px-3 py-2 rounded">
-                <span>Details</span>
-                <ChevronRightIcon className="h-5 w-5 ml-2" />
-              </button>
-            </Link>
-          </div>
-        </div>
-      ))}
+          ))}
+      </div>
     </main>
   );
 }
